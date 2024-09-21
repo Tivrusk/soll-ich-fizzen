@@ -29,20 +29,24 @@ char* load_file_as_string(const char *filename) {
     return string;
 }
 int main() {
-    system("rm index.html");
-    system("wget https://my.sport.uni-goettingen.de/fiz/");
+    system("wget -q https://my.sport.uni-goettingen.de/fiz/");
 
-    const char delim[] = " ";  // Delimiter is a space
+    char *file_contents = load_file_as_string("index.html");
+
+    const char delim[] = "\n"; // delimiter for splitting the string
     char *token;
 
     // Use strtok() to get the first token
-    token = strtok(str, delim);
+    token = strtok(file_contents, delim);
 
     // Walk through other tokens
     while (token != NULL) {
-        printf("%s\n", token);  // Print each token
+        if (strncmp(token, "gauge.set(", 10) == 0) {
+            printf("Auslastung liegt bei: %c%c.%c%c%%\n", token[14], token[15], token[16], token[17]);
+        }
         token = strtok(NULL, delim);  // Get the next token
     }
 
+    system("rm index.html");
     return 0;
 }
